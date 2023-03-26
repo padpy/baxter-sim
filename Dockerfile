@@ -17,7 +17,13 @@ RUN source /opt/ros/kinetic/setup.bash \
     && cd /root/ros_ws \
     && rosdep update \
     && rosdep install --from-paths src --ignore-src --rosdistro kinetic -y \
-    && catkin_make
+    && catkin_make \
+    && cp src/baxter/baxter.sh . \
+    && sed -i 's/ros_version="indigo"/ros_version="kinetic"/g' baxter.sh \
+    && sed -i "s/baxter_hostname=\"baxter_hostname.local\"/baxter_hostname=\"$(hostname)\"/g" baxter.sh \
+    && sed -i "s/your_ip=\"192.168.XXX.XXX\"/your_ip=\"$(hostname -I | awk '{$1=$1;print}')\"/g" baxter.sh
+
+COPY ros_entrypoint.sh /ros_entrypoint.sh
 
 WORKDIR /root/ros_ws
 
